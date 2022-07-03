@@ -39,7 +39,7 @@ struct MenuItem
 class ProgramMode : public IMode
 {
 public:
-    ProgramMode(Adafruit_SSD1306 &display);
+    ProgramMode(Adafruit_SSD1306 &display, Settings& settings);
 
     void Update() override;
 
@@ -56,13 +56,24 @@ public:
 private:
 
     static constexpr uint8_t numOfMenuItems{9};
-    MenuItem m_menuItems[numOfMenuItems];
+    static constexpr MenuItem m_menuItems[numOfMenuItems] =
+    {
+          {0x00, 0xff}
+        , {0x01, 0xff}
+        , {0x00, 0x00}
+        , {0x01, 0x00}
+        , {0xff, 0x00}
+        , {0x00, 0x01}
+        , {0x01, 0x01}
+        , {0x02, 0x01}
+        , {0xff, 0x01}
+    };
 
-    Adafruit_SSD1306 m_display;
+    Adafruit_SSD1306& m_display;
     uint8_t m_currentMenuItemIdx{0};
     uint8_t m_currentParentIdx{Settings::UndefinedValue};
     bool m_isChanged{true};
-    Settings m_settings;
+    Settings& m_settings;
 
     void UpdateMenuItem(uint8_t);
     char* GetMenuItemText(uint8_t);

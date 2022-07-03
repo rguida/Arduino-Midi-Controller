@@ -48,89 +48,113 @@ MODES
 #include "LiveMode.h"
 #include "ProgramMode.h"
 #include "RotaryEncoder.h"
+#include "Settings.h"
 
 namespace
 {
-  constexpr uint8_t DisplayWidth{128};
-  constexpr uint8_t DisplayHeight{64};
-  constexpr uint8_t OLED_RESET{4}; // Reset pin # (or -1 if sharing Arduino reset pin)
-  Adafruit_SSD1306 m_display{DisplayWidth, DisplayHeight, &Wire, OLED_RESET};
+    constexpr uint8_t DisplayWidth{128};
+    constexpr uint8_t DisplayHeight{64};
+    constexpr uint8_t OLED_RESET{4}; // Reset pin # (or -1 if sharing Arduino reset pin)
+    Adafruit_SSD1306 m_display{DisplayWidth, DisplayHeight, &Wire, OLED_RESET};
 
-  constexpr uint8_t ENCODER_CLOCK{2};
-  constexpr uint8_t ENCODER_DATA{3};
-  constexpr uint8_t ENCODER_SWITCH{4};
+    constexpr uint8_t ENCODER_CLOCK{2};
+    constexpr uint8_t ENCODER_DATA{3};
+    constexpr uint8_t ENCODER_SWITCH{4};
+    constexpr uint8_t MODE_SWITCH_PIN{5};
 
-  constexpr int8_t NumberInitialValue{0};
+    constexpr int8_t NumberInitialValue{0};
 
-  constexpr uint8_t NumOfPrograms{128};
-  constexpr uint8_t BankSize{8};
-  constexpr uint8_t NumOfBanks{NumOfPrograms / BankSize};
+    constexpr uint8_t NumOfPrograms{128};
+    constexpr uint8_t BankSize{8};
+    constexpr uint8_t NumOfBanks{NumOfPrograms / BankSize};
 
-  constexpr uint8_t Switch1Pin{5};
-  constexpr uint8_t Switch2Pin{6};
+    constexpr uint8_t Switch1Pin{5};
+    constexpr uint8_t Switch2Pin{6};
 
-  RotaryEncoder m_rotaryEncoder{ENCODER_CLOCK, ENCODER_DATA, ENCODER_SWITCH};
-  bool m_lastEncoderSwitchState;
-  // LiveMode m_currentModeHandler{m_display};
-  IMode *m_currentModeHandler;
+    RotaryEncoder m_rotaryEncoder{ENCODER_CLOCK, ENCODER_DATA, ENCODER_SWITCH};
+    bool m_lastEncoderSwitchState;
 
+    Settings m_settings;
+
+    IMode *m_currentModeHandler;
 }
 
 void setup()
 {
 #ifdef DEBUG
-  // debug_init();
-  Serial.begin(9600);
-  while (!Serial && !Serial.available())
-  {
-  }
+    // debug_init();
+    Serial.begin(9600);
+    while (!Serial && !Serial.available())
+    {
+    }
 
-  Log.begin(LOG_LEVEL_VERBOSE, &Serial);
+    Log.begin(LOG_LEVEL_VERBOSE, &Serial);
 #else
-  // Log.begin(LOG_LEVEL_SILENT, &Serial, false);
+    // Log.begin(LOG_LEVEL_SILENT, &Serial, false);
 #endif
 
-  mylog((F("Start")));
-  mylogmem();
+    mylog((F("Start")));
+    mylogmem();
 
-  // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
-  m_display.begin(SSD1306_SWITCHCAPVCC, 0x3C); // Address 0x3C for 128x32
+    // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
+    m_display.begin(SSD1306_SWITCHCAPVCC, 0x3C); // Address 0x3C for 128x32
 
-  mylog(F("Clear the display buffer."));
-  m_display.clearDisplay();
-  m_display.display();
-  mylogmem();
+    mylog(F("Clear the display buffer."));
+    m_display.clearDisplay();
+    m_display.display();
+    mylogmem();
 
-  m_currentModeHandler = new ProgramMode(m_display);
-  mylogmem();
+    bool isFunctionMode = true; //digitalRead(MODE_SWITCH_PIN);
+    if (isFunctionMode)
+    {
+        int functionMode = m_settings.GetValue(Setting::FunctionMode);
+        switch (functionMode)
+        {
+        case 0:
+            m_currentModeHandler = new LiveMode(m_display, m_settings);
+            break;
+
+        case 1:
+            // m_currentModeHandler = new LooperMode(m_display, m_settings);
+            break;
+
+        default:
+            break;
+        }
+    }
+    else
+    {
+        m_currentModeHandler = new ProgramMode(m_display, m_settings);
+    }
+    mylogmem();
 }
 
 void loop()
 {
-  mylogmem(F("Loop"));
+    mylogmem(F("Loop"));
 
-  m_rotaryEncoder.Update();
+    m_rotaryEncoder.Update();
 
-  if (m_lastEncoderSwitchState != m_rotaryEncoder.GetSwitchState())
-  {
-    m_lastEncoderSwitchState = m_rotaryEncoder.GetSwitchState();
-    if (m_rotaryEncoder.GetSwitchState())
+    if (m_lastEncoderSwitchState != m_rotaryEncoder.GetSwitchState())
     {
-      m_currentModeHandler->Select();
+        m_lastEncoderSwitchState = m_rotaryEncoder.GetSwitchState();
+        if (m_rotaryEncoder.GetSwitchState())
+        {
+            m_currentModeHandler->Select();
+        }
     }
-  }
 
-  if (m_rotaryEncoder.GetRotationState() == RotationState::Clockwise)
-  {
-    m_currentModeHandler->Increment();
-  }
+    if (m_rotaryEncoder.GetRotationState() == RotationState::Clockwise)
+    {
+        m_currentModeHandler->Increment();
+    }
 
-  if (m_rotaryEncoder.GetRotationState() == RotationState::CounterClockwise)
-  {
-    m_currentModeHandler->Decrement();
-  }
+    if (m_rotaryEncoder.GetRotationState() == RotationState::CounterClockwise)
+    {
+        m_currentModeHandler->Decrement();
+    }
 
-  m_currentModeHandler->Update();
+    m_currentModeHandler->Update();
 
-  delay(1);
+    delay(1);
 }

@@ -38,5 +38,6 @@ inline void mylogmem()
 #else
 #define DISABLE_LOGGING
 #define mylog(msg, ...)
+#define mylogmem(...)
 #endif
 

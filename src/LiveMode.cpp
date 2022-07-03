@@ -1,14 +1,14 @@
 #include "LiveMode.h"
 #include "DebugHelpers.h"
 
-LiveMode::LiveMode(Adafruit_SSD1306 &display)
+LiveMode::LiveMode(Adafruit_SSD1306 &display, Settings &settings)
     : m_display{display}
+    , m_settings{settings}
 {
-}
+    auto prgsPerBank = m_settings.GetValue(Setting::NumOfProgramsPerBank);
 
-LiveMode::~LiveMode()
-{
-    // mylog("LiveMode::dtor");
+    m_bankSize = 4 + (prgsPerBank * 2);
+    m_maxBanks = (MaxPrograms / m_bankSize) - 1;
 }
 
 void LiveMode::SetSwitch1(bool value)
@@ -61,7 +61,7 @@ void LiveMode::SetSwitch2(bool value)
 
 void LiveMode::Increment()
 {
-    if (m_lastBank < MaxBanks)
+    if (m_lastBank < m_maxBanks)
     {
         ++m_lastBank;
     }
@@ -69,15 +69,6 @@ void LiveMode::Increment()
     {
         m_lastBank = 0;
     }
-
-    // if (m_lastProgram < m_bankSize - 1)
-    // {
-    //     ++m_lastProgram;
-    // }
-    // else
-    // {
-    //     m_lastProgram = 0;
-    // }
 
     m_isChanged = true;
 }
@@ -90,17 +81,8 @@ void LiveMode::Decrement()
     }
     else
     {
-        m_lastBank = MaxBanks;
+        m_lastBank = m_maxBanks;
     }
-
-    // if (m_lastProgram > 0)
-    // {
-    //     --m_lastProgram;
-    // }
-    // else
-    // {
-    //     m_lastProgram = m_bankSize - 1;
-    // }
 
     m_isChanged = true;
 }

@@ -1,29 +1,11 @@
 #include "ProgramMode.h"
 #include "DebugHelpers.h"
-// {
-//     {0x00, 0xff, "Func Mode"}
-//   , {0x01, 0xff, "Live #Progs"}
-//   , {0x11, 0x00, "Live"}
-//   , {0x12, 0x00, "Looper"}
-//   , {0x21, 0x01, "4 prgs/bank"}
-//   , {0x22, 0x01, "6 prgs/bank"}
-//   , {0x23, 0x01, "8 prgs/bank"}
-// };
 
-ProgramMode::ProgramMode(Adafruit_SSD1306 &display)
-    : m_display{display}
+constexpr const MenuItem ProgramMode::m_menuItems[numOfMenuItems];
+
+ProgramMode::ProgramMode(Adafruit_SSD1306 &display, Settings &settings)
+    : m_display{display}, m_settings{settings}
 {
-    m_menuItems[0] = {0x00, 0xff};
-    m_menuItems[1] = {0x01, 0xff};
-
-    m_menuItems[2] = {0x00, 0};
-    m_menuItems[3] = {0x01, 0};
-    m_menuItems[4] = {0xff, 0};
-
-    m_menuItems[5] = {0x00, 1};
-    m_menuItems[6] = {0x01, 1};
-    m_menuItems[7] = {0x02, 1};
-    m_menuItems[8] = {0xff, 1};
 }
 
 void ProgramMode::Increment()
@@ -128,11 +110,11 @@ void ProgramMode::Select()
     m_isChanged = true;
 }
 
-char* ProgramMode::GetMenuItemText(uint8_t menuItemIndex)
+char *ProgramMode::GetMenuItemText(uint8_t menuItemIndex)
 {
     mylog(F("menuText %d"), menuItemIndex);
 
-    strcpy_P(m_lastMenuItemText, (char*)pgm_read_dword(&(string_table[menuItemIndex])));
+    strcpy_P(m_lastMenuItemText, (char *)pgm_read_dword(&(string_table[menuItemIndex])));
     mylog(F("%s"), m_lastMenuItemText);
     return m_lastMenuItemText;
 }
@@ -165,14 +147,17 @@ void ProgramMode::Update()
     m_display.print(F(">"));
     m_display.println(GetMenuItemText(m_currentMenuItemIdx));
 
-    uint8_t currentMenuItemValue = m_menuItems[m_currentMenuItemIdx].id;
-    uint8_t currentSettingValue = m_settings.GetValue(static_cast<Setting>(m_currentParentIdx));
-    mylog(F("%d %d"), currentMenuItemValue, currentSettingValue);
-    
-    if (currentMenuItemValue == currentSettingValue)
+    if (m_currentParentIdx != 0xff)
     {
-        m_display.fillCircle(m_display.width() - 7, m_display.height() - 7, 5, SSD1306_WHITE);
-    }
+        uint8_t currentMenuItemValue = m_menuItems[m_currentMenuItemIdx].id;
+        uint8_t currentSettingValue = m_settings.GetValue(static_cast<Setting>(m_currentParentIdx));
+        mylog(F("%d %d"), currentMenuItemValue, currentSettingValue);
 
+        if (currentMenuItemValue == currentSettingValue)
+        {
+            m_display.fillCircle(m_display.width() - 7, m_display.height() - 7, 5, SSD1306_WHITE);
+        }
+    }
+    
     m_display.display();
 }
