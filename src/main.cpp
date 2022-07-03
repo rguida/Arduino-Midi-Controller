@@ -46,6 +46,7 @@ MODES
 #include <Adafruit_SSD1306.h>
 #include "DebugHelpers.h"
 #include "LiveMode.h"
+#include "ProgramMode.h"
 #include "RotaryEncoder.h"
 
 namespace
@@ -69,7 +70,10 @@ namespace
   constexpr uint8_t Switch2Pin{6};
 
   RotaryEncoder m_rotaryEncoder{ENCODER_CLOCK, ENCODER_DATA, ENCODER_SWITCH};
-  LiveMode m_currentModeHandler{m_display};
+  bool m_lastEncoderSwitchState;
+  // LiveMode m_currentModeHandler{m_display};
+  IMode *m_currentModeHandler;
+
 }
 
 void setup()
@@ -83,11 +87,11 @@ void setup()
 
   Log.begin(LOG_LEVEL_VERBOSE, &Serial);
 #else
-  //Log.begin(LOG_LEVEL_SILENT, &Serial, false);
+  // Log.begin(LOG_LEVEL_SILENT, &Serial, false);
 #endif
 
   mylog((F("Start")));
-  mylog((F("free: %d")), (freeMemory()));
+  mylogmem();
 
   // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
   m_display.begin(SSD1306_SWITCHCAPVCC, 0x3C); // Address 0x3C for 128x32
@@ -95,28 +99,38 @@ void setup()
   mylog(F("Clear the display buffer."));
   m_display.clearDisplay();
   m_display.display();
-  mylog((F("free: %d")), (freeMemory()));
+  mylogmem();
+
+  m_currentModeHandler = new ProgramMode(m_display);
+  mylogmem();
 }
 
 void loop()
 {
-  mylog(F("Loop - free: %d"), freeMemory());
+  mylogmem(F("Loop"));
 
   m_rotaryEncoder.Update();
 
-  m_currentModeHandler.SetSwitch1(m_rotaryEncoder.GetSwitchState());
+  if (m_lastEncoderSwitchState != m_rotaryEncoder.GetSwitchState())
+  {
+    m_lastEncoderSwitchState = m_rotaryEncoder.GetSwitchState();
+    if (m_rotaryEncoder.GetSwitchState())
+    {
+      m_currentModeHandler->Select();
+    }
+  }
 
   if (m_rotaryEncoder.GetRotationState() == RotationState::Clockwise)
   {
-    m_currentModeHandler.Increment();
+    m_currentModeHandler->Increment();
   }
 
   if (m_rotaryEncoder.GetRotationState() == RotationState::CounterClockwise)
   {
-    m_currentModeHandler.Decrement();
+    m_currentModeHandler->Decrement();
   }
 
-  m_currentModeHandler.Update();
+  m_currentModeHandler->Update();
 
   delay(1);
 }

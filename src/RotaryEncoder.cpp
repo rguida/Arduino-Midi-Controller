@@ -1,6 +1,5 @@
 #include "RotaryEncoder.h"
 #include "DebugHelpers.h"
-#include <ArduinoLog.h>
 
 const uint8_t RotaryEncoder::debounceDurationMs = 50;
 

@@ -1,6 +1,5 @@
 #include "LiveMode.h"
 #include "DebugHelpers.h"
-#include <ArduinoLog.h>
 
 LiveMode::LiveMode(Adafruit_SSD1306 &display)
     : m_display{display}
