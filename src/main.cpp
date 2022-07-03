@@ -138,6 +138,7 @@ void loop()
     if (m_lastEncoderSwitchState != m_rotaryEncoder.GetSwitchState())
     {
         m_lastEncoderSwitchState = m_rotaryEncoder.GetSwitchState();
+        
         if (m_rotaryEncoder.GetSwitchState())
         {
             m_currentModeHandler->Select();

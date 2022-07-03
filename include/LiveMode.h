@@ -3,22 +3,17 @@
 #include <Adafruit_SSD1306.h>
 #include "IMode.h"
 #include "Settings.h"
+#include "MidiBus.h"
 
 class LiveMode : public IMode
 {
 public:
     LiveMode(Adafruit_SSD1306& display, Settings& settings);
-
     void Update() override;
-
     void SetSwitch1(bool value) override;
-
     void SetSwitch2(bool value) override;
-
     void Increment() override;
-
     void Decrement() override;
-
     void Select() override;
 
 private:
@@ -35,4 +30,10 @@ private:
     bool m_isChanged{true};
 
     Settings& m_settings;
+
+    static constexpr uint8_t MidiTxPin{8};
+    static constexpr uint8_t MidiRxPin{9};
+    MidiBus m_midiBus{MidiTxPin, MidiRxPin};
+
+    void DrawScreen();
 };

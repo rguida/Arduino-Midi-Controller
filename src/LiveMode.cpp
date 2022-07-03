@@ -102,6 +102,14 @@ void LiveMode::Update()
     mylog(F("LiveMode::Update %d %d %d"), m_bankSize, m_lastBank, m_lastProgram);
     m_isChanged = false;
 
+    uint8_t absoluteProgram = (m_bankSize * m_lastBank) + m_lastProgram + 1;
+    m_midiBus.SendProgramChange(absoluteProgram);
+
+    DrawScreen();
+}
+
+void LiveMode::DrawScreen()
+{
     m_display.clearDisplay();
 
     static constexpr uint8_t programIndicatorDist{2};
@@ -131,7 +139,7 @@ void LiveMode::Update()
     m_display.setTextColor(SSD1306_WHITE);
     m_display.print(bankString);
 
-    int absoluteProgram = (m_bankSize * m_lastBank) + m_lastProgram + 1;
+    uint8_t absoluteProgram = (m_bankSize * m_lastBank) + m_lastProgram + 1;
     char programString[5];
     sprintf(programString, "%03d", absoluteProgram);
 
