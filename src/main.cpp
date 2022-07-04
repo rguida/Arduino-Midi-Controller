@@ -68,8 +68,8 @@ namespace
     constexpr uint8_t BankSize{8};
     constexpr uint8_t NumOfBanks{NumOfPrograms / BankSize};
 
-    constexpr uint8_t Switch1Pin{5};
-    constexpr uint8_t Switch2Pin{6};
+    constexpr uint8_t Switch1Pin{6};
+    constexpr uint8_t Switch2Pin{7};
 
     RotaryEncoder m_rotaryEncoder{ENCODER_CLOCK, ENCODER_DATA, ENCODER_SWITCH};
     bool m_lastEncoderSwitchState;
@@ -93,20 +93,19 @@ void setup()
     // Log.begin(LOG_LEVEL_SILENT, &Serial, false);
 #endif
 
-    mylog((F("Start")));
+    mylogmem((F("Start")));
+     
+    pinMode(MODE_SWITCH_PIN, INPUT_PULLUP);
+    pinMode(Switch1Pin, INPUT_PULLUP);
+    pinMode(Switch2Pin, INPUT_PULLUP);
+
+    bool isFunctionMode = digitalRead(MODE_SWITCH_PIN);
     mylogmem();
 
-    // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
-    m_display.begin(SSD1306_SWITCHCAPVCC, 0x3C); // Address 0x3C for 128x32
-
-    mylog(F("Clear the display buffer."));
-    m_display.clearDisplay();
-    m_display.display();
-    mylogmem();
-
-    bool isFunctionMode = true; //digitalRead(MODE_SWITCH_PIN);
     if (isFunctionMode)
     {
+        mylog(F("Function Mode"));
+
         int functionMode = m_settings.GetValue(Setting::FunctionMode);
         switch (functionMode)
         {
@@ -124,8 +123,18 @@ void setup()
     }
     else
     {
+        mylog(F("Program Mode"));
         m_currentModeHandler = new ProgramMode(m_display, m_settings);
     }
+
+    mylogmem(F("Initialise display."));
+
+    // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
+    m_display.begin(SSD1306_SWITCHCAPVCC, 0x3C); // Address 0x3C for 128x32
+
+    mylogmem(F("Clear the display buffer."));
+    m_display.clearDisplay();
+    m_display.display();
     mylogmem();
 }
 
@@ -154,6 +163,9 @@ void loop()
     {
         m_currentModeHandler->Decrement();
     }
+
+    m_currentModeHandler->SetSwitch1(digitalRead(Switch1Pin));
+    m_currentModeHandler->SetSwitch2(digitalRead(Switch2Pin));
 
     m_currentModeHandler->Update();
 

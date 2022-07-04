@@ -20,19 +20,16 @@ void LiveMode::SetSwitch1(bool value)
 
     m_switch1 = value;
 
-    if (m_switch1)
+    if (m_lastProgram < m_bankSize - 1)
     {
-        if (m_lastProgram < m_bankSize - 1)
-        {
-            ++m_lastProgram;
-        }
-        else
-        {
-            m_lastProgram = 0;
-        }
-
-        m_isChanged = true;
+        ++m_lastProgram;
     }
+    else
+    {
+        m_lastProgram = 0;
+    }
+
+    m_isChanged = true;
 }
 
 void LiveMode::SetSwitch2(bool value)
@@ -44,19 +41,16 @@ void LiveMode::SetSwitch2(bool value)
 
     m_switch2 = value;
 
-    if (m_switch2)
+    if (m_lastProgram > 0)
     {
-        if (m_lastProgram > 0)
-        {
-            --m_lastProgram;
-        }
-        else
-        {
-            m_lastProgram = m_bankSize - 1;
-        }
-
-        m_isChanged = true;
+        --m_lastProgram;
     }
+    else
+    {
+        m_lastProgram = m_bankSize - 1;
+    }
+
+    m_isChanged = true;
 }
 
 void LiveMode::Increment()
