@@ -14,12 +14,13 @@ RotaryEncoder::~RotaryEncoder()
 }
 
 RotaryEncoder::RotaryEncoder(uint8_t clockPin, uint8_t dataPin, uint8_t switchPin)
+    : m_switchState{false}
+    , m_clockPin{clockPin}
+    , m_dataPin{dataPin}
+    , m_switchPin{switchPin}
+    , m_rotationState{RotationState::Idle}
 {
     //mylog("RotaryEncoder::ctor");
-
-    m_clockPin = clockPin;
-    m_dataPin = dataPin;
-    m_switchPin = switchPin;
 
     m_switchDebouncer.attach(switchPin, INPUT_PULLUP);
     m_switchDebouncer.interval(debounceDurationMs * 2);

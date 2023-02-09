@@ -96,7 +96,7 @@ void LiveMode::Update()
     mylog(F("LiveMode::Update %d %d %d"), m_bankSize, m_lastBank, m_lastProgram);
     m_isChanged = false;
 
-    uint8_t absoluteProgram = (m_bankSize * m_lastBank) + m_lastProgram + 1;
+    uint8_t absoluteProgram = (m_bankSize * m_lastBank) + m_lastProgram;
     m_midiBus.SendProgramChange(absoluteProgram);
 
     DrawScreen();

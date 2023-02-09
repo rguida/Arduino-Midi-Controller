@@ -12,7 +12,7 @@ INPUT
     e) Three-position Switch (Function-OFF-Program)
 
 OUTPUT
-    f) OLED Display
+    f) OLED SSD1306 Display
     g) MIDI port
 
 MODES
@@ -133,6 +133,7 @@ void setup()
     m_display.begin(SSD1306_SWITCHCAPVCC, 0x3C); // Address 0x3C for 128x32
 
     mylogmem(F("Clear the display buffer."));
+    m_display.setRotation(2);
     m_display.clearDisplay();
     m_display.display();
     mylogmem();

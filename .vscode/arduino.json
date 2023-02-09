@@ -1,0 +1,8 @@
+{
+    "configuration": "cpu=atmega328",
+    "board": "arduino:avr:nano",
+    "port": "COM7",
+    "sketch": "MidiController.ino",
+    "output": "./build",
+    "programmer": "arduino:avrispmkii"
+}
