@@ -62,10 +62,10 @@ The user can configure the controller via the rotary encoder:
 
 ### Libraries
 
-- Adafruit_SSD1306 by Adafruit | [https://github.com/adafruit/Adafruit_SSD1306](https://github.com/adafruit/Adafruit_SSD1306)
-- SoftwareSerial | [http://arduiniana.org/libraries/newsoftserial/](http://arduiniana.org/libraries/newsoftserial/)
-- ec11.hpp by Aleh Dzenisiuk | [http://github.com/aleh/a21](http://github.com/aleh/a21)
-- Bounce2.h by Thomas Ouellet Fredericks | [https://github.com/thomasfredericks/Bounce2](https://github.com/thomasfredericks/Bounce2)
+- [Adafruit_SSD1306](https://github.com/adafruit/Adafruit_SSD1306) by Adafruit
+- [SoftwareSerial](http://arduiniana.org/libraries/newsoftserial/)
+- [ec11.hpp](http://github.com/aleh/a21) by Aleh Dzenisiuk
+- [Bounce2.h](https://github.com/thomasfredericks/Bounce2) by Thomas Ouellet Fredericks
 
 ### Directory Structure
 
