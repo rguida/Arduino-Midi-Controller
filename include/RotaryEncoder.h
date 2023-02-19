@@ -1,7 +1,6 @@
 #pragma once
 
 #include "ec11.hpp"
-//#include <ArxSmartPtr.h>
 #include <Bounce2.h>
 
 enum class RotationState

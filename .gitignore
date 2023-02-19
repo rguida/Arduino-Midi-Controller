@@ -4,3 +4,4 @@
 .vscode/launch.json
 .vscode/ipch
 scripts/__pycache__/*
+*.blend1
