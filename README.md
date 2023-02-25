@@ -4,11 +4,11 @@ Arduino MIDI Foot Controller for Guitarists.
 
 ![Blender rendering](./docs/Rendering_01.png)
 
-This is an Arduino-based MIDI controller designed specifically for guitarists. It features two pedal switches that can be used for controlling effects and other parameters in MIDI devices, making it a great tool for guitarists who use MIDI effects with their playing.
+This is an Arduino-based MIDI controller designed specifically for guitarists. It features two pedal switches that can be used for controlling effects and other parameters in MIDI devices, making it a great tool for guitarists who use effects with their playing.
 
-While this controller was initially designed to control Amplitube 5, it can be used to control any MIDI device, making it a versatile tool for any musician who uses MIDI in their setup.
+While this controller was designed to control Amplitube 5, it can be used to control any MIDI device, making it a versatile tool for any musician who uses MIDI in their setup.
 
-The controller has only two foot switches to keep the cost low (mainly due to the aluminum box), but it can be easily extended to more switches.
+The controller has only two foot switches to keep its cost low (mainly due to the aluminum box), but it can be relatively easily extended to more switches.
 
 The controller sports two function modes and one programming mode.
 
